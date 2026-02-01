@@ -7,7 +7,7 @@ const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 });
 
-// Esri Satellite
+// Esri Satellite Imagery
 const esriSat = L.tileLayer(
   'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   {
@@ -15,16 +15,9 @@ const esriSat = L.tileLayer(
   }
 );
 
-// Esri Reference Layers (Labels & Boundaries)
-const esriLabels = L.tileLayer(
+// ✅ Esri Hybrid Overlay (Labels + Borders)
+const esriHybrid = L.tileLayer(
   'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-  {
-    attribution: 'Esri'
-  }
-);
-
-const esriBoundaries = L.tileLayer(
-  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
   {
     attribution: 'Esri'
   }
@@ -37,7 +30,7 @@ const esriBoundaries = L.tileLayer(
 const map = L.map('map', {
   center: [-7.8, 110.4], // Indonesia
   zoom: 7,
-  layers: [esriSat, esriLabels, esriBoundaries] // Satellite default
+  layers: [esriSat, esriHybrid] // Satellite + labels ON by default
 });
 
 // ===============================
@@ -58,13 +51,12 @@ const baseMaps = {
 };
 
 const overlayMaps = {
-  "Labels": esriLabels,
-  "Boundaries": esriBoundaries
+  "Labels & Borders": esriHybrid
 };
 
 L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-// Scale bar (nice touch)
+// Scale bar
 L.control.scale().addTo(map);
 
 // ===============================
@@ -91,5 +83,5 @@ fetch('data/sample.geojson')
     map.fitBounds(geojsonLayer.getBounds());
   })
   .catch(error => {
-    console.error('Error loading GeoJSON:', error);
+    console.error('GeoJSON load error:', error);
   });
